@@ -8,8 +8,8 @@ std::string get_mac_address(uint8_t* mac_address) {
 }
 
 std::string get_ip_address(in_addr ip_address) {
-    char res[20] = {' ', };
-    sprintf(res, "%-19s", inet_ntoa(ip_address));
+    char res[16] = {' ', };
+    sprintf(res, "%-15s", inet_ntoa(ip_address));
     std::string ret = res;
     return ret;
 }
