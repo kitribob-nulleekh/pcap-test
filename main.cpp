@@ -50,14 +50,14 @@ int main(int argc, char* argv[]) {
         printf("[           %04ubytes           ]\n", header->caplen);
 
         printf("---------------SRC---------------\n");
-        printf("MAC      = %s\n", get_mac_address(ethernet_header->ether_shost).c_str());
-        printf("IP       = %s\n", get_ip_address(ip_header->ip_src).c_str());
-        printf("TCP Port = %s\n", get_port_number(tcp_header->th_sport).c_str());
+        printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_shost).c_str());
+        printf("IP   = %s\n", get_ip_address(ip_header->ip_src).c_str());
+        printf("PORT = %s\n", get_port_number(tcp_header->th_sport).c_str());
 
         printf("---------------DST---------------\n");
-        printf("MAC      = %s\n", get_mac_address(ethernet_header->ether_dhost).c_str());
-        printf("IP       = %s\n", get_ip_address(ip_header->ip_dst).c_str());
-        printf("TCP Port = %s\n", get_port_number(tcp_header->th_dport).c_str());
+        printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_dhost).c_str());
+        printf("IP   = %s\n", get_ip_address(ip_header->ip_dst).c_str());
+        printf("PORT = %s\n", get_port_number(tcp_header->th_dport).c_str());
 
         printf("---------------DAT---------------\n");
         printf("%s", get_sample_data(payload, len).c_str());
