@@ -5,6 +5,12 @@
 #include <netinet/in.h>
 #include "extractor.h"
 
+void print_divider(std::string title) {
+    printf("---------------");
+    printf("%s", title.c_str());
+    printf("---------------\n");
+}
+
 void usage() {
     printf("ERROR: Please enter your interface\n");
     printf("\n");
@@ -49,17 +55,17 @@ int main(int argc, char* argv[]) {
     
         printf("[           %04ubytes           ]\n", header->caplen);
 
-        printf("---------------SRC---------------\n");
+        print_divider("SRC");
         printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_shost).c_str());
         printf("IP   = %s\n", get_ip_address(ip_header->ip_src).c_str());
         printf("PORT = %s\n", get_port_number(tcp_header->th_sport).c_str());
 
-        printf("---------------DST---------------\n");
+        print_divider("DST");
         printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_dhost).c_str());
         printf("IP   = %s\n", get_ip_address(ip_header->ip_dst).c_str());
         printf("PORT = %s\n", get_port_number(tcp_header->th_dport).c_str());
 
-        printf("---------------DAT---------------\n");
+        print_divider("DAT");
         printf("%s", get_sample_data(payload, len).c_str());
 
         printf("\n\n\n");
