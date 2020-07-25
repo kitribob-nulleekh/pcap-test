@@ -5,6 +5,12 @@
 #include <netinet/in.h>
 #include "extractor.h"
 
+void print_contents(uint8_t* mac, in_addr ip, uint16_t port) {
+        printf("MAC  = %s\n", get_mac_address(mac).c_str());
+        printf("IP   = %s\n", get_ip_address(ip).c_str());
+        printf("PORT = %s\n", get_port_number(port).c_str());
+}
+
 void print_divider(std::string title) {
     printf("---------------");
     printf("%s", title.c_str());
@@ -56,14 +62,10 @@ int main(int argc, char* argv[]) {
         printf("[           %04ubytes           ]\n", header->caplen);
 
         print_divider("SRC");
-        printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_shost).c_str());
-        printf("IP   = %s\n", get_ip_address(ip_header->ip_src).c_str());
-        printf("PORT = %s\n", get_port_number(tcp_header->th_sport).c_str());
+        print_contents(ethernet_header->ether_shost, ip_header->ip_src, tcp_header->th_sport);
 
         print_divider("DST");
-        printf("MAC  = %s\n", get_mac_address(ethernet_header->ether_dhost).c_str());
-        printf("IP   = %s\n", get_ip_address(ip_header->ip_dst).c_str());
-        printf("PORT = %s\n", get_port_number(tcp_header->th_dport).c_str());
+        print_contents(ethernet_header->ether_dhost, ip_header->ip_dst, tcp_header->th_dport);
 
         print_divider("DAT");
         printf("%s", get_sample_data(payload, len).c_str());
