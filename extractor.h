@@ -8,9 +8,9 @@
 #include <libnet.h>
 #include <netinet/in.h>
 
-std::string get_mac_address(uint8_t* mac_address);
-std::string get_ip_address(struct in_addr ip_address);
-std::string get_port_number(uint16_t port_number);
-std::string get_sample_data(uint8_t* payload, uint8_t len);
+std::string get_mac_address(uint8_t* macAddress);
+std::string get_ip_address(struct in_addr ipAddress);
+std::string get_port_number(uint16_t portNumber);
+std::string get_sample_data(uint8_t* payload, uint8_t length);
 
 #endif // EXTRACTOR_H

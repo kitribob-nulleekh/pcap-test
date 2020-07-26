@@ -5,16 +5,32 @@
 #include <netinet/in.h>
 #include "extractor.h"
 
-void print_contents(uint8_t* mac, in_addr ip, uint16_t port) {
-        printf("MAC  = %s\n", get_mac_address(mac).c_str());
-        printf("IP   = %s\n", get_ip_address(ip).c_str());
-        printf("PORT = %s\n", get_port_number(port).c_str());
-}
 
 void print_divider(std::string title) {
     printf("---------------");
     printf("%s", title.c_str());
     printf("---------------\n");
+}
+
+void print_data(std::string title, const u_char* packet, uint8_t ipLen, uint8_t ipHeaderLen, uint8_t tcpOffset) {
+    uint8_t* payload = (uint8_t*)(packet + sizeof(struct libnet_ethernet_hdr) + ipHeaderLen + tcpOffset);
+    uint8_t length = ntohs(ipLen) - (ipHeaderLen + tcpOffset);
+
+    print_divider(title);
+
+    printf("%s", get_sample_data(payload, length).c_str());
+}
+
+void print_information(std::string title, uint8_t* mac, in_addr ip, uint16_t port) {
+    print_divider(title);
+
+    printf("MAC  = %s\n", get_mac_address(mac).c_str());
+    printf("IP   = %s\n", get_ip_address(ip).c_str());
+    printf("PORT = %s\n", get_port_number(port).c_str());
+}
+
+void print_title(uint8_t packetLen) {
+    printf("[           %04ubytes           ]\n", packetLen);
 }
 
 void usage() {
@@ -49,26 +65,18 @@ int main(int argc, char* argv[]) {
         }
         //printf("%u bytes captured\n", header->caplen);
 
-        struct libnet_ethernet_hdr* ethernet_header = (struct libnet_ethernet_hdr*)packet;
-        struct libnet_ipv4_hdr* ip_header = (struct libnet_ipv4_hdr*)(packet + sizeof(struct libnet_ethernet_hdr));
-        struct libnet_tcp_hdr* tcp_header = (struct libnet_tcp_hdr*)(packet + sizeof(struct libnet_ethernet_hdr) + (ip_header->ip_hl << 2));
+        struct libnet_ethernet_hdr* ethernetHeader = (struct libnet_ethernet_hdr*)packet;
+        struct libnet_ipv4_hdr* ipHeader = (struct libnet_ipv4_hdr*)(packet + sizeof(struct libnet_ethernet_hdr));
+        struct libnet_tcp_hdr* tcpHeader = (struct libnet_tcp_hdr*)(packet + sizeof(struct libnet_ethernet_hdr) + (ipHeader->ip_hl << 2));
 
-        if (ntohs(ethernet_header->ether_type) != ETHERTYPE_IP) continue;
-        if (ip_header->ip_p != IPPROTO_TCP) continue;
-
-        uint8_t* payload = (uint8_t*)(packet + sizeof(struct libnet_ethernet_hdr) + ip_header->ip_hl*4 + tcp_header->th_off*4);
-        uint8_t len = ntohs(ip_header->ip_len) - (ip_header->ip_hl*4 + tcp_header->th_off*4);
+        if (ntohs(ethernetHeader->ether_type) != ETHERTYPE_IP) continue;
+        if (ipHeader->ip_p != IPPROTO_TCP) continue;
     
-        printf("[           %04ubytes           ]\n", header->caplen);
+        print_title(header->caplen);
 
-        print_divider("SRC");
-        print_contents(ethernet_header->ether_shost, ip_header->ip_src, tcp_header->th_sport);
-
-        print_divider("DST");
-        print_contents(ethernet_header->ether_dhost, ip_header->ip_dst, tcp_header->th_dport);
-
-        print_divider("DAT");
-        printf("%s", get_sample_data(payload, len).c_str());
+        print_information("SRC", ethernetHeader->ether_shost, ipHeader->ip_src, tcpHeader->th_sport);
+        print_information("DST", ethernetHeader->ether_dhost, ipHeader->ip_dst, tcpHeader->th_dport);
+        print_data("DAT", packet, ipHeader->ip_len, ipHeader->ip_hl*4 , tcpHeader->th_off*4);
 
         printf("\n\n\n");
     }
