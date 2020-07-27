@@ -23,7 +23,8 @@ std::string get_port_number(uint16_t portNumber) {
 
 std::string get_sample_data(uint8_t* payload, uint8_t length) {
     char res[49] = {' ', };
-    for (int i = 0 ; i < 16 && i < length ; i++) {
+    int sampleLength = 16<length ? 16 : length;
+    for (int i = 0 ; i < sampleLength ; i++) {
         if (i != 7) sprintf(&res[i*3], "%02x ", payload[i]);
         else sprintf(&res[i*3], "%02x\n", payload[i]);
     }
